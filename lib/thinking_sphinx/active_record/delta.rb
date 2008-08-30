@@ -66,7 +66,7 @@ module ThinkingSphinx
           
           # Set the delta value for the model to be true.
           def toggle_delta
-            self.delta = true
+            self.delta = true if ThinkingSphinx.updates_enabled? && ThinkingSphinx.deltas_enabled?
           end
           
           # Build the delta index for the related model. This won't be called
