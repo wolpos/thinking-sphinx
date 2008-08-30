@@ -244,6 +244,24 @@ module ThinkingSphinx
         end
       end
       
+      # Returns an array of tuples of the group-results. 
+      # Each tuple is composed of the ID used for grouping
+      # and the size of the found group.
+      # [ [ID1, count1], [ID2, count2], ...]
+      #
+      # You need to set the group_clause to @count to geht the group-sizes.
+      #   :group_clause=>'@count DESC'
+      #
+      # Example:
+      #
+      # ThinkingSphinx::Search.search_groups('term*',
+      #               :group_function=>:attr, :group_clause=>'@count DESC', :group_by=>'city_id')
+      #
+      def search_groups(*args)
+        results = search_results(*args.clone).first
+        return results[:matches].map{|m| [m[:attributes]['@groupby'],m[:attributes]['@count']]}
+      end
+
       private
       
       # This method handles the common search functionality, and returns both
