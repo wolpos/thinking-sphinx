@@ -87,8 +87,15 @@ module ThinkingSphinx
               attributes << Attribute.new(
                 fields.last.columns.collect { |col| col.clone },
                 options.merge(
-                  :type => :string,
-                  :as => fields.last.unique_name.to_s.concat("_sort").to_sym
+                  :type => :sortable_num,
+                  :as => fields.last.unique_name.to_s.concat("_num").to_sym
+                )
+              )
+              attributes << Attribute.new(
+                fields.last.columns.collect { |col| col.clone },
+                options.merge(
+                  :type => :sortable_num2,
+                  :as => fields.last.unique_name.to_s.concat("_num2").to_sym
                 )
               )
             end

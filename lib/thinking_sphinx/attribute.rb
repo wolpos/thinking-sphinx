@@ -80,6 +80,15 @@ module ThinkingSphinx
       clause = group_concatenate(clause, separator) if is_many?
       clause = cast_to_datetime(clause)             if type == :datetime
       clause = convert_nulls(clause)                if type == :string
+      if type == :sortable_num
+        field = convert_nulls_lower(clause)
+        return "((ascii(#{field})         *256+ascii(mid(#{field},2,1)))*256+ascii(mid(#{field},3,1)))*256+ascii(mid(#{field},4,1)) AS #{quote_column(unique_name)}"
+      end
+      if type == :sortable_num2
+        field = convert_nulls_lower(clause)
+        return "((ascii(mid(#{field},4,1))*256+ascii(mid(#{field},5,1)))*256+ascii(mid(#{field},6,1)))*256+ascii(mid(#{field},7,1)) AS #{quote_column(unique_name)}"
+      end
+
       
       "#{clause} AS #{quote_column(unique_name)}"
     end
@@ -191,6 +200,17 @@ module ThinkingSphinx
       end
     end
     
+    def convert_nulls_lower(clause)
+      case @model.connection.class.name
+      when "ActiveRecord::ConnectionAdapters::MysqlAdapter"
+        "IFNULL(lower(#{clause}), '')"
+      when "ActiveRecord::ConnectionAdapters::PostgreSQLAdapter"
+        "COALESCE(#{clause}, '')"
+      else
+        clause
+      end
+    end
+
     def quote_column(column)
       @model.connection.quote_column_name(column)
     end
